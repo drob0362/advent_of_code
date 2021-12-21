@@ -1,11 +1,9 @@
-filename = 'input1'
+import sys
+sys.path.append('../')
 
-with open(filename) as f:
-    lines = f.readlines()
+import read_file
 
-print(len(lines))
-tup = tuple(lines)
-
+tup = read_file.get_file_contents('input')
 print(type(tup))
 
 increase = 0

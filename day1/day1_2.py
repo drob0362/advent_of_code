@@ -1,6 +1,7 @@
 import sys
+sys.path.append('../')
 
-filename = 'input1'
+import read_file
 
 increase = 0
 totalsDict = {}
@@ -48,14 +49,7 @@ def create_windows(measurement_list):
     # s)
     return measurement_windows
 
-
-
-with open(filename) as f:
-    lines = f.read().splitlines()
-
-print("number of measurements = {}".format(len(lines)))
-puzzle_input = tuple(lines)
-
+puzzle_input = read_file.get_file_contents('input')
 halt_early = True
 halt_index = 9
 
