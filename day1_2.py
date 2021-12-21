@@ -1,85 +1,80 @@
-# import sys
+import sys
 
 filename = 'input1'
 
 increase = 0
-measurementDict = {}
 totalsDict = {}
+measurement_windows_list = []
+window_totals_list = []
 
-def sumWindow(measurementList):
+def sum_window(measurement_list):
+    print(measurement_list)
     total = 0
-    for measurement in measurementList:
+    for measurement in measurement_list:
         total = total + int(measurement)
     print("measurement window total = {}".format(total))
     return total
 
-def processMeasurements(measurementDict):
+def process_measurements(windows_total_list):
 
     increase = 0
-    for i in range (1, len(measurementDict)):
-        next_measurement = sumWindow(measurementDict[i])
-        curr_measurement = sumWindow(measurementDict[i-1])
+    print("list size = {}".format(len(window_totals_list)))
+
+    for i in range (0, len(windows_total_list)-1):
+        curr_measurement = windows_total_list[i]
+        next_measurement = windows_total_list[i+1]
+        print("{}: curr_measurement {}, next measurement {}".format(i, curr_measurement, next_measurement))
 
         if (next_measurement > curr_measurement):
             print("increase")
             increase = increase +1 
-        # print("next m {}".format(next_measurement))
-        # print("curr m {}".format(curr_measurement))
-        # list retrieved from dictionary
-        # print(type(measurementDict[i]))
-        # call sumwindow on current entry and previous
-        # then compare, as in script 1
+
+        # if i > 10:
+        #     break
+
+    print("total increases = {}".format(increase))
+
+
+def create_windows(measurement_list):
+
+    measurement_windows = []
+    for measurement_index in range(0, len(measurement_list)):
+        if measurement_index + 3 > len(measurement_list):
+            break
+        # slice the list to get the required windows
+        measurement_windows.append(measurement_list[measurement_index:measurement_index+3])
+
+    # print(measurement_window
+    # s)
+    return measurement_windows
+
 
 
 with open(filename) as f:
     lines = f.read().splitlines()
 
-# print(len(lines))
-tup = tuple(lines)
+print("number of measurements = {}".format(len(lines)))
+puzzle_input = tuple(lines)
 
 halt_early = True
-halt_index = 30
-
-# print(type(tup))
-# capture measurements in a list
-# clear group out when we've processed a block of 3
-# find window of 3 using modulus
-# store each group in a dict, as they may be required later
-# dict usage dictname['key] or dictname = {'key1':value, 'key2':value}
-# append to list = listname.append(value)
-
-
-#  need to compare 3 numbers (a) with next 3 numbers (b), with pos incr of 1 for b
+halt_index = 9
 
 
 # sys.exit(0)
 
-for measurementIndex in range(1, len(tup)):
+measurement_windows_list = create_windows(puzzle_input)
 
-    # we've reached a multiple of 3
-    if (measurementIndex % 3 == 0):
-        intMeasurementIndex = int(measurementIndex)
-        print("found end of window at pos {}".format(measurementIndex))
-        trioList = [tup[i] for i in range(measurementIndex-3,
-            measurementIndex)]
-        # print("window list = {} ".format(trioList))
-        measurementDict[len(measurementDict)] = trioList
+for measurement_window in measurement_windows_list:
+    window_totals_list.append(sum_window(measurement_window))
+
+# print(window_totals_list)
+# print(len(window_totals_list))
+
+process_measurements(window_totals_list)
 
 
-    if (halt_early and measurementIndex == halt_index):
-        print("halted at {} ".format(measurementIndex))
-        break
+# print("increased measurements = {0}".format(increase))
 
-print("increased measurements = {0}".format(increase))
-
-# print measurement windows
-for i in range (len(measurementDict)):
-    print("dictionary window list = {}".format(measurementDict[i]))
-    #  pass in list
-    sumWindow(measurementDict[i])
-
-# now calculate the increases from the dictionary measurements
-processMeasurements(measurementDict)
 
 
 
