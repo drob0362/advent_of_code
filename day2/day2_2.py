@@ -1,90 +1,71 @@
 import fnmatch, re
+from os import read
 import sys
 sys.path.append('../')
 
 import read_file
 
-tup = read_file.get_file_contents('input')
+tup = read_file.get_file_contents('sample_input')
 # print(len(tup))
 # print(type(tup))
 # print(tup)
 
+horiz_pos = 0
+aim = 0
+depth = 0
 
+def split_instruction_out(input):
+    readings_list = []
+    for input_line in input:
+        readings_list.append(input_line.split())
 
+    return readings_list
 
-# down X increases your aim by X units.
-# up X decreases your aim by X units.
-# forward X does two things:
-# It increases your horizontal position by X units.
-# It increases your depth by your aim multiplied by X.
-
-def get_readings_from_input(input):
-
-    dist_re = re.compile("^forward")
-    distance = list(filter(dist_re.match, input))
-    # print(distance)
-
-    depth_re = re.compile("^down|^up")
-    depth = list(filter(depth_re.match, input))
-    # print(depth)
-
-    combined_readings = distance + depth
-    print(combined_readings)
-    return combined_readings
-
-def create_list_of_dicts(list_arg):
+def convert_list_to_dict(list_arg):
     new_list = []
     for nested_list in list_arg:
-        new_list.append(dict(zip(nested_list[::2], nested_list[1::2])))
+        print(nested_list)
+        print(nested_list[::2])
+        # new_list.append(dict(zip(nested_list[::2], nested_list[1::2])))
 
-    print(new_list)
+    # print(new_list)
     return new_list
 
-def split_instruction_from_readings(input):
-    new_list = []
 
-    for reading in input:
-        new_list.append(reading.split())
+def identify_instruction(instruction):
 
-    print(new_list[0:5])
-    return new_list
+    global horiz_pos, aim, depth
 
-def calculate_final_depth(input_list_of_dicts):
-    depth = 0
-    for input_dict in input_list_of_dicts:
-        dict_item_list = next(iter(input_dict.items()))
-        # print(dict_item_list)
-        if dict_item_list[0] == "up":
-            # print("up")
-            depth = depth - int(dict_item_list[1])
-        elif dict_item_list[0] == "down":
-            # print("down")
-            depth = depth + int(dict_item_list[1])
+    if instruction[0] == 'forward':
+        process_forward(horiz_pos, depth, aim, instruction[1])
+    else:
+        aim =  aim + adjust_aim(instruction)
+        print("aim = {}".format(aim))
+
+
+def adjust_aim(reading_input):
+    print("direction is {}, aim adjust is {}".format(reading_input[0], reading_input[1]))
+    if reading_input[0] == 'down':
+        return - int(reading_input[1])
+    # must be up
+    return int(reading_input[1])
+
+# TODO complete forward calculations
+def process_forward(horizontal_pos, depth, aim, reading):
+    print("forward distance = {}".format(reading))
+    horizontal_pos = horizontal_pos + int(reading)
+    depth = (depth * aim) * reading
     print("depth = {}".format(depth))
     return depth
 
-def calculate_dist_travelled(input_list):
-    dist = 0
-    for input in input_list:
-        dist = dist + int(input)
+readings_list = split_instruction_out(tup)
+print(readings_list)
 
-    print("horizontal distance = {}".format(dist))
-    return dist
+count = 0
+for reading in readings_list:
+    identify_instruction(reading)
+    count = count + 1
+    if count == 10:
+        break
 
-# horiz_pos_list = split_instruction_from_readings(horiz_pos_list, None)
-# horiz_dist = calculate_dist_travelled(horiz_pos_list)
-
-# readings = get_readings_from_input(tup)
-
-split_instruction_from_readings(tup)
-
-# depth_list = split_instruction_from_readings(None, depth_list)
-
-
-# depth_list_of_dicts = convert_list_to_dict(depth_list)
-# print(depth_list_of_dicts)
-# depth = calculate_final_depth(depth_list_of_dicts)
-
-# final_position = depth * horiz_dist
-# print("final pos {}".format(final_position))
-
+print("aim = {}, depth = {}".format(aim, depth))
